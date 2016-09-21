@@ -36,7 +36,7 @@ mqd_t mq_open (const char *pathname,int oflag,...)
 	
 	created = 0;
 	nonblock = oflag & O_NONBLOCK;
-	oflag &= O_NONBLOCK;
+	oflag &= ~O_NONBLOCK;
 
 	mptr = (int8_t *) MAP_FAILED;
 	mqinfo = NULL;

@@ -36,3 +36,7 @@ struct mq_info {
 
 #define MQI_MAGIC 0X98765432
 #define MSGSIZE(i) ((((i) + sizeof (long) - 1) / sizeof (long)) * sizeof (long))
+
+
+mqd_t mq_open (const char *pathname,int oflag,...);
+
