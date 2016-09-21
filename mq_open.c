@@ -128,17 +128,66 @@ again:
 		return (mqd_t) mqinfo;
 	}	
 
-err:
-
-
-	return 0;
-pthreaderr:
-
-
-
-	return 0;
-
 exist:
-	
-	return 0;
+	if ((fd = open (pathname,O_RDWR)) < 0) {
+		if (errno == ENOENT && (oflag & O_CREAT))
+			goto again;
+		goto err;
+	}
+
+	for (i = 0;i < MAX_TRIES; i++) {
+		if (stat (pathname,&statbuff) == -1) {
+			
+			if (errno == ENOENT && (oflag & O_CREAT))
+			{
+				close (fd);
+				goto again;
+			}
+
+			goto err;
+		}
+
+		if ((statbuff.st_mode & S_IXUSR) == 0)
+			break;
+
+		sleep (1);
+	}
+
+	if (i == MAX_TRIES) {
+		errno = ETIMEDOUT;
+		goto err;
+	}
+
+	filesize = statbuff.st_size;
+	mptr = mmap (NULL,filesize,PROT_READ|PROT_WRITE,MAP_SHARED,fd,0);
+	if (mptr == MAP_FAILED) {
+		goto err;
+	}
+
+	close (fd);
+
+	if ((mqinfo = (struct mq_info *) malloc (sizeof (struct mq_info))) == NULL) 
+		goto err;
+
+	mqinfo->mqi_hdr = (struct mq_hdr *) mptr;
+	mqinfo->mqi_magic = MQI_MAGIC;
+	mqinfo->mqi_flags = nonblock;
+
+	return ((mqd_t )(mqinfo));
+
+pthreaderr:
+	errno = i;
+
+err:
+	save_errno = errno;
+	if (created) 
+		unlink (pathname);
+	if (mptr != MAP_FAILED)
+		munmap (mptr,filesize);
+	if (mqinfo != NULL)
+		free (mqinfo);
+
+	close (fd);
+	errno = save_errno;
+	return ((mqd_t) -1);
 }
