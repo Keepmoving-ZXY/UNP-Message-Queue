@@ -39,4 +39,8 @@ struct mq_info {
 
 
 mqd_t mq_open (const char *pathname,int oflag,...);
-
+int mq_close (mqd_t mqd);
+int mq_unlink (const char *pathname);
+int mq_getattr (mqd_t mqd,struct mq_attr *mqstat);
+int mq_setattr (mqd_t mqd,const struct mq_attr *mqstat,struct mq_attr *omqstat);
+int mq_notify (mqd_t mqd,const struct sigevent *notification);

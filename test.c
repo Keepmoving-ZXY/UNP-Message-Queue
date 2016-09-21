@@ -7,6 +7,7 @@
 
 int main ()
 {
+	struct mq_attr attr;
 	char filename [] = "testfile";
 	mqd_t mqd;
 	mqd = mq_open (filename,O_RDWR|O_CREAT,S_IRUSR|S_IWUSR|S_IRGRP|S_IROTH);
@@ -14,7 +15,11 @@ int main ()
 		perror ("mq_open");
 		exit (1);
 	}
-
+	
+	mq_getattr (mqd,&attr);
+	printf ("%ld %ld %ld\n",attr.mq_maxmsg,attr.mq_msgsize,attr.mq_curmsgs);
+	mq_close (mqd);
+	mq_unlink (filename);	
 
 	return 0;
 }
