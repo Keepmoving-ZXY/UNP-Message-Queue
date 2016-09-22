@@ -30,7 +30,7 @@ ssize_t mq_receive (mqd_t mqd,char *ptr,size_t maxlen,unsigned int *priop)
 		return -1;
 	}
 
-	if (maxlen < attr->mq_maxmsg) {
+	if (maxlen < attr->mq_msgsize) {
 		errno = EMSGSIZE;
 		goto err;
 	}
@@ -77,5 +77,4 @@ ssize_t mq_receive (mqd_t mqd,char *ptr,size_t maxlen,unsigned int *priop)
 err:
 	pthread_mutex_unlock (&mqhdr->mqh_lock);
 	return -1;
-	
 }
