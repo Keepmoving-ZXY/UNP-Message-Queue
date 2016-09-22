@@ -44,3 +44,5 @@ int mq_unlink (const char *pathname);
 int mq_getattr (mqd_t mqd,struct mq_attr *mqstat);
 int mq_setattr (mqd_t mqd,const struct mq_attr *mqstat,struct mq_attr *omqstat);
 int mq_notify (mqd_t mqd,const struct sigevent *notification);
+int mq_send (mqd_t mqd,const char *ptr,size_t len,unsigned int prio);
+ssize_t mq_receive (mqd_t mqd,char *ptr,size_t maxlen,unsigned int *priop);
